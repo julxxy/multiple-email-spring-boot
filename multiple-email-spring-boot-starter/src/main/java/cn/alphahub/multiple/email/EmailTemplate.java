@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +48,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 @Component
 @Validated
+@RequiredArgsConstructor
 public class EmailTemplate {
     /**
      * thread pool executor
@@ -64,13 +66,6 @@ public class EmailTemplate {
      * default java mail sender
      */
     private final JavaMailSender defaultJavaMailSender;
-
-    public EmailTemplate(ThreadPoolExecutor executor, EmailAspect emailAspect, MailProperties defaultMailProperties, JavaMailSender defaultJavaMailSender) {
-        this.executor = executor;
-        this.emailAspect = emailAspect;
-        this.defaultMailProperties = defaultMailProperties;
-        this.defaultJavaMailSender = defaultJavaMailSender;
-    }
 
     /**
      * 获取邮件是发送实例
@@ -136,7 +131,7 @@ public class EmailTemplate {
      *
      * @param domain metadata of message to send
      * @param file   Nullable, support for spring MVC upload file received in the request, can be null.
-     * @throws MailException Base class for all mail exceptions
+     * @throws MessagingException messaging exception
      */
     public void send(@Valid MimeMessageDomain domain, @Nullable MultipartFile file) throws MessagingException {
         JavaMailSender mailSender = this.getMailSender();
