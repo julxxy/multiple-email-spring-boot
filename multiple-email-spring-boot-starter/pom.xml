@@ -14,23 +14,6 @@
     <version>1.0.0</version>
     <name>multiple-email-spring-boot-starter</name>
     <description>Multi-template email sending support, 多模板邮件发送支持.</description>
-    <url>https://github.com/Weasley-J/multiple-email-spring-boot-starter</url>
-
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>https://www.opensource.org/licenses/mit-license.php</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>Weasley J</name>
-            <email>1432689025@qq.com</email>
-            <url>https://github.com/Weasley-J</url>
-        </developer>
-    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -104,6 +87,30 @@
             <version>${spring-cloud-context.version}</version>
         </dependency>
     </dependencies>
+
+    <url>https://github.com/Weasley-J/multiple-email-spring-boot-starter</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Weasley J</name>
+            <email>1432689025@qq.com</email>
+            <url>https://github.com/Weasley-J</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/Weasley-J/multiple-email-spring-boot-starter</url>
+        <connection>https://github.com/Weasley-J/multiple-email-spring-boot-starter.git</connection>
+        <developerConnection>https://github.com/Weasley-J/multiple-email-spring-boot-starter</developerConnection>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
