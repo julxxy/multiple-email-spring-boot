@@ -107,6 +107,7 @@ public class EmailConfig {
     /**
      * 线程池
      *
+     * @param threadPoolProperties thread pool properties
      * @return thread pool executor
      */
     @Bean

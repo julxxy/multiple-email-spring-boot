@@ -110,9 +110,9 @@ spring:
     <dependencies>
         <!-- 邮件支持模块 -->
         <dependency>
-            <groupId>cn.alphahub.multiple.sms</groupId>
+            <groupId>io.github.weasley-j</groupId>
             <artifactId>multiple-email-spring-boot-starter</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
           <!-- spring web启动器 -->
         <dependency>

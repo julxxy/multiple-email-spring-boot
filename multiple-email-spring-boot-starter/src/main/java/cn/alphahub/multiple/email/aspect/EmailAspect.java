@@ -30,12 +30,11 @@ import java.util.Objects;
  * 邮件模板切面
  * <p>
  * 关于注解{@code @Email}作用在类和方法的优先级问题
- *     <ul>
- *         <li>1. 当注解{@code @Email}作用类上时，该类所有邮件模板方法发送邮件的客户端都以注解{@code @Email}指定为准客户端</li>
- *         <li>2. 当注解{@code @Email}作用方法上时，该方法邮件客户端的为注解{@code @Email}指定的邮件客户端</li>
- *         <li>3. 当注解{@code @Email}同时作用类，和方法上时，类上{@code @Email}注解的优先级高于方法上注解{@code @Email}的优先级</li>
- *     </ul>
- * </p>
+ * <ul>
+ *     <li>1. 当注解{@code @Email}作用类上时，该类所有邮件模板方法发送邮件的客户端都以注解{@code @Email}指定为准客户端</li>
+ *     <li>2. 当注解{@code @Email}作用方法上时，该方法邮件客户端的为注解{@code @Email}指定的邮件客户端</li>
+ *     <li>3. 当注解{@code @Email}同时作用类，和方法上时，类上{@code @Email}注解的优先级高于方法上注解{@code @Email}的优先级</li>
+ * </ul>
  *
  * @author lwj
  * @version 1.0
@@ -76,8 +75,12 @@ public class EmailAspect {
         // a void method for proxy on class aspect pointcut.
     }
 
+
     /**
      * 目标方法执行之前执行
+     *
+     * @param point join point
+     * @param email email annotation
      */
     @Before("pointcutProxyOnClass() && @within(email)")
     public void beforeProxyOnClass(JoinPoint point, Email email) {
@@ -91,6 +94,8 @@ public class EmailAspect {
      * 目标方法执行之后必定执行(无论是否报错)
      * <p>
      * 目标方法同时需要{@code @Email}注解的修饰，并且这里（通知）的形参名要与上面注解中的一致
+     *
+     * @param email email annotation
      */
     @After("pointcutProxyOnClass() && @within(email)")
     public void afterProxyOnClass(Email email) {
@@ -102,6 +107,9 @@ public class EmailAspect {
      * 目标方法抛出异常后执行
      * <p>
      * 目标方法同时需要{@code @Email}注解的修饰，并且这里（通知）的形参名要与上面注解中的一致,可以声明来获取目标方法抛出的异常
+     *
+     * @param throwable some exception
+     * @param email     email annotation
      */
     @AfterThrowing(pointcut = "pointcutProxyOnClass() && @within(email)", throwing = "throwable")
     public void afterThrowingProxyOnClass(Email email, Throwable throwable) {
@@ -122,6 +130,9 @@ public class EmailAspect {
 
     /**
      * 目标方法执行之前执行
+     *
+     * @param point join point
+     * @param email email annotation
      */
     @Before("pointcut() && @annotation(email)")
     public void before(JoinPoint point, Email email) {
@@ -137,6 +148,10 @@ public class EmailAspect {
 
     /**
      * 环绕通知
+     *
+     * @param point point
+     * @return proceed
+     * @throws Throwable throwable
      */
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -152,6 +167,8 @@ public class EmailAspect {
      * 目标方法执行之后必定执行(无论是否报错)
      * <p>
      * 目标方法同时需要{@code @Email}注解的修饰，并且这里（通知）的形参名要与上面注解中的一致
+     *
+     * @param email email annotation
      */
     @After("pointcut() && @annotation(email)")
     public void after(Email email) {
@@ -164,6 +181,8 @@ public class EmailAspect {
      * 目标方法有返回值且正常返回后执行
      * <p>
      * 这里切入点方法的形参名{@code pointcut()}要与上面注解中的一致
+     * @param point join point
+     * @param responseData response data
      */
     @AfterReturning(pointcut = "pointcut()", returning = "responseData")
     public void afterReturning(JoinPoint point, Object responseData) {
@@ -180,6 +199,9 @@ public class EmailAspect {
      * 目标方法抛出异常后执行
      * <p>
      * 目标方法同时需要{@code @Email}注解的修饰，并且这里（通知）的形参名要与上面注解中的一致,可以声明来获取目标方法抛出的异常
+     *
+     * @param throwable some throwable
+     * @param email     email annotation
      */
     @AfterThrowing(pointcut = "pointcut() && @annotation(email)", throwing = "throwable")
     public void afterThrowing(Email email, Throwable throwable) {
