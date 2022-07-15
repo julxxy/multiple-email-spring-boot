@@ -6,7 +6,6 @@ import cn.hutool.json.JSONUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,12 +47,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 @Component
 @Validated
-@RequiredArgsConstructor
 public class EmailTemplate {
-    /**
-     * thread pool executor
-     */
-    private final ThreadPoolExecutor executor;
     /**
      * email aspect
      */
@@ -66,6 +60,17 @@ public class EmailTemplate {
      * default java mail sender
      */
     private final JavaMailSender defaultJavaMailSender;
+    /**
+     * thread pool executor
+     */
+    private final ThreadPoolExecutor emailThreadPoolExecutor;
+
+    public EmailTemplate(ThreadPoolExecutor emailThreadPoolExecutor, EmailAspect emailAspect, MailProperties defaultMailProperties, JavaMailSender defaultJavaMailSender) {
+        this.emailThreadPoolExecutor = emailThreadPoolExecutor;
+        this.emailAspect = emailAspect;
+        this.defaultMailProperties = defaultMailProperties;
+        this.defaultJavaMailSender = defaultJavaMailSender;
+    }
 
     /**
      * 获取邮件是发送实例
@@ -116,7 +121,7 @@ public class EmailTemplate {
             log.info("Current send simple message thread info: '{}' '{}' '{}'", Thread.currentThread().getId(), Thread.currentThread().getThreadGroup().getName(), Thread.currentThread().getName());
             RequestContextHolder.setRequestAttributes(mainThreadRequestAttributes);
             mailSender.send(simpleMessage);
-        }, executor);
+        }, emailThreadPoolExecutor);
 
         try {
             CompletableFuture.allOf(sendResponseFuture).get();
@@ -155,7 +160,7 @@ public class EmailTemplate {
             log.info("Current send mime mime message thread info: '{}' '{}' '{}'", Thread.currentThread().getId(), Thread.currentThread().getThreadGroup().getName(), Thread.currentThread().getName());
             RequestContextHolder.setRequestAttributes(mainThreadRequestAttributes);
             mailSender.send(mimeMessage);
-        }, executor);
+        }, emailThreadPoolExecutor);
 
         try {
             CompletableFuture.allOf(sendResponseFuture).get();

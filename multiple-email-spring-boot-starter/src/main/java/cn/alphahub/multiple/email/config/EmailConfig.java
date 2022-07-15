@@ -1,20 +1,22 @@
 package cn.alphahub.multiple.email.config;
 
 import cn.alphahub.multiple.email.annotation.Email;
+import cn.alphahub.multiple.email.aspect.EmailAspect;
 import cn.hutool.core.collection.CollUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -38,13 +40,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RefreshScope
-@Configuration
-@DependsOn({"emailPropertiesMap", "javaMailSenderMap"})
-@EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
-@EnableConfigurationProperties({
-        MailProperties.class, EmailConfig.EmailProperties.class,
-        EmailConfig.EmailTemplateProperties.class, EmailConfig.ThreadPoolProperties.class
-})
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureBefore({EmailAspect.class})
+@ConfigurationPropertiesScan({"cn.alphahub.multiple.email.config"})
+@EnableConfigurationProperties({MailProperties.class, EmailConfig.EmailProperties.class,
+        EmailConfig.EmailTemplateProperties.class, EmailConfig.EmailThreadPoolProperties.class})
 public class EmailConfig {
 
     /**
@@ -76,6 +76,7 @@ public class EmailConfig {
      * @return javaMailSenderMap邮件发送对象实例
      */
     @RefreshScope
+    @DependsOn({"emailPropertiesMap"})
     @Bean(name = {"javaMailSenderMap"})
     public Map<String, JavaMailSender> javaMailSenderMap(@Qualifier("emailPropertiesMap") Map<String, MailProperties> emailPropertiesMap) {
         Map<String, JavaMailSender> javaMailSenderMap = new ConcurrentHashMap<>(100);
@@ -107,19 +108,18 @@ public class EmailConfig {
     /**
      * 线程池
      *
-     * @param threadPoolProperties thread pool properties
+     * @param emailThreadPoolProperties thread pool properties
      * @return thread pool executor
      */
-    @Bean
-    @RefreshScope
-    @ConditionalOnMissingBean(name = {"threadPoolExecutor"})
-    public ThreadPoolExecutor threadPoolExecutor(ThreadPoolProperties threadPoolProperties) {
+    @Bean(name = {"emailThreadPoolExecutor"})
+    @ConditionalOnMissingBean(value = {ThreadPoolExecutor.class})
+    public ThreadPoolExecutor emailThreadPoolExecutor(EmailThreadPoolProperties emailThreadPoolProperties) {
         return new ThreadPoolExecutor(
-                threadPoolProperties.getCorePoolSize(),
-                threadPoolProperties.getMaximumPoolSize(),
-                threadPoolProperties.getKeepAliveTime(),
-                threadPoolProperties.getTimeUnit(),
-                new LinkedBlockingQueue<>(threadPoolProperties.getCapacity()),
+                emailThreadPoolProperties.getCorePoolSize(),
+                emailThreadPoolProperties.getMaximumPoolSize(),
+                emailThreadPoolProperties.getKeepAliveTime(),
+                emailThreadPoolProperties.getTimeUnit(),
+                new LinkedBlockingQueue<>(emailThreadPoolProperties.getCapacity()),
                 Executors.defaultThreadFactory(),
                 new ThreadPoolExecutor.AbortPolicy()
         );
@@ -159,17 +159,17 @@ public class EmailConfig {
      */
     @Data
     @ConfigurationProperties(prefix = "spring.mail.thread")
-    public static class ThreadPoolProperties {
+    public static class EmailThreadPoolProperties {
         /**
-         * 核心线程池数量，默认：50
+         * 核心线程池数量
          */
-        private Integer corePoolSize = 50;
+        private Integer corePoolSize = 5;
         /**
-         * 最大线程数，默认：200
+         * 最大线程数
          */
-        private Integer maximumPoolSize = 200;
+        private Integer maximumPoolSize = 50;
         /**
-         * 存活时间，默认：10
+         * 存活时间
          */
         private Long keepAliveTime = 10L;
         /**
@@ -179,9 +179,9 @@ public class EmailConfig {
          */
         private TimeUnit timeUnit = TimeUnit.SECONDS;
         /**
-         * 最大任务数量，默认：2000
+         * 最大任务数量
          */
-        private Integer capacity = 2000;
+        private Integer capacity = 200;
     }
 }
 
