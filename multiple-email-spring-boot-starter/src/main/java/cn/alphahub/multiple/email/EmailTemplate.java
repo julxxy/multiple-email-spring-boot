@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
@@ -47,30 +49,28 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 @Component
 @Validated
+@AutoConfigureBefore({MailProperties.class, JavaMailSender.class})
 public class EmailTemplate {
     /**
      * email aspect
      */
-    private final EmailAspect emailAspect;
+    @Autowired
+    private EmailAspect emailAspect;
     /**
      * default mail properties
      */
-    private final MailProperties defaultMailProperties;
+    @Autowired(required = false)
+    private MailProperties defaultMailProperties;
     /**
      * default java mail sender
      */
-    private final JavaMailSender defaultJavaMailSender;
+    @Autowired(required = false)
+    private JavaMailSender defaultJavaMailSender;
     /**
      * thread pool executor
      */
-    private final ThreadPoolExecutor emailThreadPoolExecutor;
-
-    public EmailTemplate(ThreadPoolExecutor emailThreadPoolExecutor, EmailAspect emailAspect, MailProperties defaultMailProperties, JavaMailSender defaultJavaMailSender) {
-        this.emailThreadPoolExecutor = emailThreadPoolExecutor;
-        this.emailAspect = emailAspect;
-        this.defaultMailProperties = defaultMailProperties;
-        this.defaultJavaMailSender = defaultJavaMailSender;
-    }
+    @Autowired
+    private ThreadPoolExecutor emailThreadPoolExecutor;
 
     /**
      * 获取邮件是发送实例
