@@ -1,8 +1,9 @@
 package cn.alphahub.multiple.email.aspect;
 
 import cn.alphahub.multiple.email.annotation.Email;
-import cn.alphahub.multiple.email.config.EmailConfig;
+import cn.alphahub.multiple.email.config.ClientWrapper;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -13,14 +14,11 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,26 +38,15 @@ import java.util.Objects;
 @Slf4j
 @Aspect
 @Component
-@AutoConfigureAfter({EmailConfig.class})
 public class EmailAspect {
     /**
      * mail sender thread local
      */
-    private static final ThreadLocal<JavaMailSender> MAIL_SENDER_THREAD_LOCAL = new ThreadLocal<>();
+    public static final ThreadLocal<JavaMailSender> MAIL_SENDER_THREAD_LOCAL = new ThreadLocal<>();
     /**
      * mail properties thread local
      */
-    private static final ThreadLocal<MailProperties> MAIL_PROPERTIES_THREAD_LOCAL = new ThreadLocal<>();
-    /**
-     * 填充邮件模板配置列表元数据Map
-     */
-    @Autowired
-    private Map<String, MailProperties> emailPropertiesMap;
-    /**
-     * 邮件发送对象Map
-     */
-    @Autowired
-    private Map<String, JavaMailSender> javaMailSenderMap;
+    public static final ThreadLocal<MailProperties> MAIL_PROPERTIES_THREAD_LOCAL = new ThreadLocal<>();
 
     /////////////////////////////////////////////////////////////
     //                  AOP Proxy On Class
@@ -82,10 +69,9 @@ public class EmailAspect {
      */
     @Before("pointcutProxyOnClass() && @within(email)")
     public void beforeProxyOnClass(JoinPoint point, Email email) {
-        MailProperties properties = emailPropertiesMap.get(email.name());
-        JavaMailSender javaMailSender = javaMailSenderMap.get(email.name());
-        MAIL_SENDER_THREAD_LOCAL.set(javaMailSender);
-        MAIL_PROPERTIES_THREAD_LOCAL.set(properties);
+        ClientWrapper wrapper = SpringUtil.getBean(ClientWrapper.class);
+        MAIL_SENDER_THREAD_LOCAL.set(wrapper.getMailSender(email.name()));
+        MAIL_PROPERTIES_THREAD_LOCAL.set(wrapper.getMailProperties(email.name()));
     }
 
     /**
@@ -97,8 +83,10 @@ public class EmailAspect {
      */
     @After("pointcutProxyOnClass() && @within(email)")
     public void afterProxyOnClass(Email email) {
-        MAIL_SENDER_THREAD_LOCAL.remove();
-        MAIL_PROPERTIES_THREAD_LOCAL.remove();
+        if (MAIL_SENDER_THREAD_LOCAL.get() != null)
+            MAIL_SENDER_THREAD_LOCAL.remove();
+        if (MAIL_PROPERTIES_THREAD_LOCAL.get() != null)
+            MAIL_PROPERTIES_THREAD_LOCAL.remove();
     }
 
     /**
@@ -135,10 +123,9 @@ public class EmailAspect {
     @Before("pointcut() && @annotation(email)")
     public void before(JoinPoint point, Email email) {
         log.info("1. before");
-        MailProperties properties = emailPropertiesMap.get(email.name());
-        JavaMailSender javaMailSender = javaMailSenderMap.get(email.name());
-        MAIL_SENDER_THREAD_LOCAL.set(javaMailSender);
-        MAIL_PROPERTIES_THREAD_LOCAL.set(properties);
+        ClientWrapper wrapper = SpringUtil.getBean(ClientWrapper.class);
+        MAIL_SENDER_THREAD_LOCAL.set(wrapper.getMailSender(email.name()));
+        MAIL_PROPERTIES_THREAD_LOCAL.set(wrapper.getMailProperties(email.name()));
     }
 
     /**
@@ -168,8 +155,10 @@ public class EmailAspect {
     @After("pointcut() && @annotation(email)")
     public void after(Email email) {
         log.info("3. after");
-        MAIL_SENDER_THREAD_LOCAL.remove();
-        MAIL_PROPERTIES_THREAD_LOCAL.remove();
+        if (MAIL_SENDER_THREAD_LOCAL.get() != null)
+            MAIL_SENDER_THREAD_LOCAL.remove();
+        if (MAIL_PROPERTIES_THREAD_LOCAL.get() != null)
+            MAIL_PROPERTIES_THREAD_LOCAL.remove();
     }
 
     /**
@@ -201,20 +190,4 @@ public class EmailAspect {
     /////////////////////////////////////////////////////////////
     //                  END AOP CONSTRUCTION
     /////////////////////////////////////////////////////////////
-
-    /**
-     * 获取邮件是发送实例（ThreadLocal中获取，目标方法后移除线程变量）
-     *
-     * @return JavaMailSender
-     */
-    public JavaMailSender javaMailSender() {
-        return MAIL_SENDER_THREAD_LOCAL.get();
-    }
-
-    /**
-     * @return 电子邮件支持的配置属性
-     */
-    public MailProperties mailProperties() {
-        return MAIL_PROPERTIES_THREAD_LOCAL.get();
-    }
 }

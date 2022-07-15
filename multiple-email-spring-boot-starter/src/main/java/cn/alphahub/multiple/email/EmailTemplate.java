@@ -52,11 +52,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @AutoConfigureBefore({MailProperties.class, JavaMailSender.class})
 public class EmailTemplate {
     /**
-     * email aspect
-     */
-    @Autowired
-    private EmailAspect emailAspect;
-    /**
      * default mail properties
      */
     @Autowired(required = false)
@@ -78,7 +73,7 @@ public class EmailTemplate {
      * @return JavaMailSender
      */
     private JavaMailSender getMailSender() {
-        JavaMailSender mailSender = emailAspect.javaMailSender();
+        JavaMailSender mailSender = EmailAspect.MAIL_SENDER_THREAD_LOCAL.get();
         if (Objects.isNull(mailSender)) {
             return this.defaultJavaMailSender;
         }
@@ -91,7 +86,7 @@ public class EmailTemplate {
      * @return MailProperties
      */
     private MailProperties getMailProperties() {
-        MailProperties properties = emailAspect.mailProperties();
+        MailProperties properties = EmailAspect.MAIL_PROPERTIES_THREAD_LOCAL.get();
         if (Objects.isNull(properties)) {
             return this.defaultMailProperties;
         }

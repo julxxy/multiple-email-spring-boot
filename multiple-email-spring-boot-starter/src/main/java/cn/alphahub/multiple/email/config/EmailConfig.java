@@ -1,12 +1,10 @@
 package cn.alphahub.multiple.email.config;
 
 import cn.alphahub.multiple.email.annotation.Email;
-import cn.alphahub.multiple.email.aspect.EmailAspect;
 import cn.hutool.core.collection.CollUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -16,8 +14,6 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -42,8 +38,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RefreshScope
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({EmailAspect.class})
-@EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
 @ConfigurationPropertiesScan({"cn.alphahub.multiple.email.config"})
 @EnableConfigurationProperties({MailProperties.class, EmailConfig.EmailProperties.class,
         EmailConfig.EmailTemplateProperties.class, EmailConfig.EmailThreadPoolProperties.class})
@@ -56,7 +50,6 @@ public class EmailConfig {
      * @param emailTemplateProperties 多邮件模板配置列表元数据属性
      * @return 填充邮件模板配置列表元数据Map
      */
-    @RefreshScope
     @Bean(name = {"emailPropertiesMap"})
     public Map<String, MailProperties> emailPropertiesMap(@Valid MailProperties mailProperties, @Valid EmailTemplateProperties emailTemplateProperties) {
         Map<String, MailProperties> mailPropertiesMap = new ConcurrentHashMap<>(100);
@@ -77,8 +70,6 @@ public class EmailConfig {
      * @param emailPropertiesMap 填充邮件模板配置列表元数据Map
      * @return javaMailSenderMap邮件发送对象实例
      */
-    @RefreshScope
-    @DependsOn({"emailPropertiesMap"})
     @Bean(name = {"javaMailSenderMap"})
     public Map<String, JavaMailSender> javaMailSenderMap(@Qualifier("emailPropertiesMap") Map<String, MailProperties> emailPropertiesMap) {
         Map<String, JavaMailSender> javaMailSenderMap = new ConcurrentHashMap<>(100);
@@ -105,6 +96,20 @@ public class EmailConfig {
             }
         });
         return javaMailSenderMap;
+    }
+
+
+    /**
+     * client wrapper
+     *
+     * @param emailPropertiesMap emailPropertiesMap
+     * @param javaMailSenderMap  ClientWrapper
+     * @return ClientWrapper
+     */
+    @Bean
+    public ClientWrapper clientWrapper(@Qualifier("emailPropertiesMap") Map<String, MailProperties> emailPropertiesMap,
+                                       @Qualifier("javaMailSenderMap") Map<String, JavaMailSender> javaMailSenderMap) {
+        return new ClientWrapper(emailPropertiesMap, javaMailSenderMap);
     }
 
     /**
