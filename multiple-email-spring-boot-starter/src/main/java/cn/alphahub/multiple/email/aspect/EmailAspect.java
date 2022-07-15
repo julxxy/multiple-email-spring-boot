@@ -1,7 +1,7 @@
 package cn.alphahub.multiple.email.aspect;
 
 import cn.alphahub.multiple.email.annotation.Email;
-import cn.alphahub.multiple.email.config.ClientWrapper;
+import cn.alphahub.multiple.email.config.MailWrapper;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +69,7 @@ public class EmailAspect {
      */
     @Before("pointcutProxyOnClass() && @within(email)")
     public void beforeProxyOnClass(JoinPoint point, Email email) {
-        ClientWrapper wrapper = SpringUtil.getBean(ClientWrapper.class);
+        MailWrapper wrapper = SpringUtil.getBean(MailWrapper.class);
         MAIL_SENDER_THREAD_LOCAL.set(wrapper.getMailSender(email.name()));
         MAIL_PROPERTIES_THREAD_LOCAL.set(wrapper.getMailProperties(email.name()));
     }
@@ -123,7 +123,7 @@ public class EmailAspect {
     @Before("pointcut() && @annotation(email)")
     public void before(JoinPoint point, Email email) {
         log.info("1. before");
-        ClientWrapper wrapper = SpringUtil.getBean(ClientWrapper.class);
+        MailWrapper wrapper = SpringUtil.getBean(MailWrapper.class);
         MAIL_SENDER_THREAD_LOCAL.set(wrapper.getMailSender(email.name()));
         MAIL_PROPERTIES_THREAD_LOCAL.set(wrapper.getMailProperties(email.name()));
     }

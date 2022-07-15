@@ -18,7 +18,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientWrapper {
+public class MailWrapper {
     /**
      * email properties map
      */

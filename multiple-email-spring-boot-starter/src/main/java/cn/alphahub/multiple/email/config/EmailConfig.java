@@ -103,13 +103,13 @@ public class EmailConfig {
      * client wrapper
      *
      * @param emailPropertiesMap emailPropertiesMap
-     * @param javaMailSenderMap  ClientWrapper
-     * @return ClientWrapper
+     * @param javaMailSenderMap  MailWrapper
+     * @return MailWrapper
      */
     @Bean
-    public ClientWrapper clientWrapper(@Qualifier("emailPropertiesMap") Map<String, MailProperties> emailPropertiesMap,
-                                       @Qualifier("javaMailSenderMap") Map<String, JavaMailSender> javaMailSenderMap) {
-        return new ClientWrapper(emailPropertiesMap, javaMailSenderMap);
+    public MailWrapper clientWrapper(@Qualifier("emailPropertiesMap") Map<String, MailProperties> emailPropertiesMap,
+                                     @Qualifier("javaMailSenderMap") Map<String, JavaMailSender> javaMailSenderMap) {
+        return new MailWrapper(emailPropertiesMap, javaMailSenderMap);
     }
 
     /**
