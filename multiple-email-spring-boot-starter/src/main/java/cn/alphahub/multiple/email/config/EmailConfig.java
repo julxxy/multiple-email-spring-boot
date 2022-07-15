@@ -17,6 +17,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 @RefreshScope
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore({EmailAspect.class})
+@EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
 @ConfigurationPropertiesScan({"cn.alphahub.multiple.email.config"})
 @EnableConfigurationProperties({MailProperties.class, EmailConfig.EmailProperties.class,
         EmailConfig.EmailTemplateProperties.class, EmailConfig.EmailThreadPoolProperties.class})
