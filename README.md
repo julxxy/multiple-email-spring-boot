@@ -108,7 +108,7 @@ spring:
         <dependency>
             <groupId>io.github.weasley-j</groupId>
             <artifactId>multiple-email-spring-boot-starter</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
         </dependency>
           <!-- spring web启动器 -->
         <dependency>
