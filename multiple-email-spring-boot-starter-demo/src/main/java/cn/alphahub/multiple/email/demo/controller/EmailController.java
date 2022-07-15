@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,7 +42,7 @@ public class EmailController {
      * @apiNote 次方便没有标注注解@Email，则会采用默认方法邮件模板[spring.mail.xxx]发送邮件
      */
     @PostMapping("/simple/send")
-    public void sendSimpleEmail(@ModelAttribute(name = "message") @Validated SimpleMailMessageDomain message) {
+    public void sendSimpleEmail(@RequestBody @Validated SimpleMailMessageDomain message) {
         log.info("send simple email:{}", message);
         emailTemplate.send(message);
     }
