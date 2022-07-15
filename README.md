@@ -25,10 +25,11 @@
 
 对`spring-boot-starter-mail`进行增强, [实践项目](https://github.com/Weasley-J/lejing-mall)，以下是一些运行要求:
 
-| item        | requirement            | remark |
-| ----------- | ---------------------- | ------ |
-| JDK         | JDK1.8 or latest       |        |
-| Environment | Spring Web Application |        |
+| item        | requirement                           | remark |
+| ----------- | ------------------------------------- | ------ |
+| SpringBoot  | 2.2.0.RELEASE  <= version <= 3.0.0-M3 |        |
+| JDK         | JDK1.8 or latest                      |        |
+| Environment | Spring Web Application                |        |
 
 ## 2 采用`application.yml`配置
 
