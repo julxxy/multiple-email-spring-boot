@@ -14,8 +14,6 @@
 | JDK         | JDK1.8 or latest       |        |
 | Environment | Spring Web Application |        |
 
-
-
 ## 1 采用`application.yml`配置
 
 ### 1.1 修改配置文件: application-email.yml
@@ -81,8 +79,6 @@ spring:
               debug: false
 ```
 
-
-
 ### 1.2 需要发邮件服务导入`multiple-email-spring-boot-starter`的maven坐标
 
 ```xml
@@ -112,7 +108,7 @@ spring:
         <dependency>
             <groupId>io.github.weasley-j</groupId>
             <artifactId>multiple-email-spring-boot-starter</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
           <!-- spring web启动器 -->
         <dependency>
@@ -148,13 +144,12 @@ spring:
 </project>
 ```
 
-
-
 ### 1.3 需要发邮件的服务加载`multiple-email-spring-boot-starter` 模块邮件的配置元数据
 
 路径: `lejing-common/multiple-email-spring-boot-starter/src/main/resources/application-email.yml`
 
-**application-email.yml**里面的元数据作为**共享配置数据**的方式引入其他需要发送邮件的服务共享，通过**spring.profiles.include=email**的方式引入，也可以直接写在`application.yml`里面；
+**application-email.yml**里面的元数据作为**共享配置数据**的方式引入其他需要发送邮件的服务共享，通过**spring.profiles.include=email**
+的方式引入，也可以直接写在`application.yml`里面；
 
 需要发邮件的目标服务的**application.yml**配置如下：
 
@@ -167,8 +162,6 @@ spring:
     #加载common工程配置文件 'application-email.yml' 邮件配置元数据, spring.profiles.include: email
     include: email
 ```
-
-
 
 ### 1.4 使用核心注解@Email指定邮件模板
 
@@ -206,8 +199,6 @@ public @interface Email {
 ```
 
 使用方式见`1.6`节`EmailController`
-
-
 
 ### 1.5 使用EmailTemplate发送邮件
 
@@ -311,8 +302,6 @@ public class EmailController {
 }
 ```
 
-
-
 **方法说明：**
 
 - 发送给定的简单邮件消息
@@ -330,8 +319,6 @@ public class EmailController {
 ```
 
 此方法没有标注`@Email`注解指定邮件模板，则会使用默认邮件模板发送。
-
-
 
 - 发送带附件的邮件消息
 
@@ -351,7 +338,9 @@ public class EmailController {
     );
 ```
 
-此方法有标注`@Email(name = "EmailOffice365")`注解指定邮件模板，指定以配置文件`lejing-common/multiple-email-spring-boot-starter/src/main/resources/application-email.yml`里面的`EmailOffice365`邮件模板发送，在处理逻辑是会调用对应的对应的`JavaMailSender`实例执行发短信的逻辑。
+此方法有标注`@Email(name = "EmailOffice365")`
+注解指定邮件模板，指定以配置文件`lejing-common/multiple-email-spring-boot-starter/src/main/resources/application-email.yml`
+里面的`EmailOffice365`邮件模板发送，在处理逻辑是会调用对应的对应的`JavaMailSender`实例执行发短信的逻辑。
 
 ### 1.7 效果演示
 
@@ -368,8 +357,6 @@ public class EmailController {
 
 ![image-20210910233858832](https://alphahub-test-bucket.oss-cn-shanghai.aliyuncs.com/image/image-20210910233858832.png)
 
-
-
 ## 2 总结&提示
 
 **1.3**配置完后，意味着**`lejing-site-reserve`**这个服务已经整合了多模板邮件发送功能。
@@ -380,17 +367,14 @@ public class EmailController {
 - 然后再加载**`spring.profiles.active=dev`**的元数据
 - **`spring.profiles.include`**引入元数据会覆盖当前服务的同名属性
 
-
-
 ## 3 关于注解`@Email`作用在类和方法的优先级问题
 
 - 当注解`@Email`同时作用类，和方法上时，类上`@Email`注解的优先级高于方法上注解`@Email`的优先级
 - 当注解`@Email`作用方法上时，该方法邮件客户端的为注解`@Email`指定的邮件客户端
 - 当注解`@Email`作用类上时，该类所有邮件模板方法发送邮件的客户端都以注解`@Email`指定为准客户端
 
-
-
 ## 4 关于`Spring IOC`容器中的同一个`Bean`实例里面被`@Email`注解标注的方法间嵌套调用的问题
 
-请参考模块`lejing-common/lejing-common-sms-support`[🔗](https://github.com/Weasley-J/lejing-mall/tree/main/lejing-common/lejing-common-sms-support#5-%E5%85%B3%E4%BA%8Espring-ioc%E5%AE%B9%E5%99%A8%E4%B8%AD%E7%9A%84%E5%90%8C%E4%B8%80%E4%B8%AAbean%E5%AE%9E%E4%BE%8B%E9%87%8C%E9%9D%A2%E8%A2%ABsms%E6%B3%A8%E8%A7%A3%E6%A0%87%E6%B3%A8%E7%9A%84%E6%96%B9%E6%B3%95%E9%97%B4%E5%B5%8C%E5%A5%97%E8%B0%83%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98)的`README.md`文档第**5**小节，性质一模一样，注解不一样而已.
+请参考模块`lejing-common/lejing-common-sms-support`[🔗](https://github.com/Weasley-J/lejing-mall/tree/main/lejing-common/lejing-common-sms-support#5-%E5%85%B3%E4%BA%8Espring-ioc%E5%AE%B9%E5%99%A8%E4%B8%AD%E7%9A%84%E5%90%8C%E4%B8%80%E4%B8%AAbean%E5%AE%9E%E4%BE%8B%E9%87%8C%E9%9D%A2%E8%A2%ABsms%E6%B3%A8%E8%A7%A3%E6%A0%87%E6%B3%A8%E7%9A%84%E6%96%B9%E6%B3%95%E9%97%B4%E5%B5%8C%E5%A5%97%E8%B0%83%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98)
+的`README.md`文档第**5**小节，性质一模一样，注解不一样而已.
 

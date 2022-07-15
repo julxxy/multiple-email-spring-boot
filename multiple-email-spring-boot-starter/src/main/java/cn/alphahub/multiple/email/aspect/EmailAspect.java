@@ -1,6 +1,7 @@
 package cn.alphahub.multiple.email.aspect;
 
 import cn.alphahub.multiple.email.annotation.Email;
+import cn.alphahub.multiple.email.config.EmailConfig;
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -13,6 +14,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -43,6 +45,7 @@ import java.util.Objects;
 @Slf4j
 @Aspect
 @Component
+@AutoConfigureAfter({EmailConfig.class})
 public class EmailAspect {
     /**
      * mail sender thread local
@@ -181,7 +184,8 @@ public class EmailAspect {
      * 目标方法有返回值且正常返回后执行
      * <p>
      * 这里切入点方法的形参名{@code pointcut()}要与上面注解中的一致
-     * @param point join point
+     *
+     * @param point        join point
      * @param responseData response data
      */
     @AfterReturning(pointcut = "pointcut()", returning = "responseData")
