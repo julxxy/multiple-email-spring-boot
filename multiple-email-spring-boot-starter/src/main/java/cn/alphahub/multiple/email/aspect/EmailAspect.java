@@ -13,17 +13,12 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -58,12 +53,12 @@ public class EmailAspect {
     /**
      * 填充邮件模板配置列表元数据Map
      */
-    @Resource
+    @Autowired
     private Map<String, MailProperties> emailPropertiesMap;
     /**
      * 邮件发送对象Map
      */
-    @Resource
+    @Autowired
     private Map<String, JavaMailSender> javaMailSenderMap;
 
     /////////////////////////////////////////////////////////////
@@ -140,9 +135,6 @@ public class EmailAspect {
     @Before("pointcut() && @annotation(email)")
     public void before(JoinPoint point, Email email) {
         log.info("1. before");
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
-
         MailProperties properties = emailPropertiesMap.get(email.name());
         JavaMailSender javaMailSender = javaMailSenderMap.get(email.name());
         MAIL_SENDER_THREAD_LOCAL.set(javaMailSender);
@@ -191,12 +183,6 @@ public class EmailAspect {
     @AfterReturning(pointcut = "pointcut()", returning = "responseData")
     public void afterReturning(JoinPoint point, Object responseData) {
         log.info("4. afterReturning, responseData: {}", Objects.isNull(responseData) ? "response data is null." : responseData.toString());
-        Object[] args = point.getArgs();
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        Method method = signature.getMethod();
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
-
     }
 
     /**
