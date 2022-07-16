@@ -33,7 +33,7 @@
     </developers>
 
     <scm>
-        <url>https://github.com/Weasley-J/multiple-email-spring-boot.git</url>
+        <url>https://github.com/Weasley-J/multiple-email-spring-boot</url>
         <connection>https://github.com/Weasley-J/multiple-email-spring-boot.git</connection>
         <developerConnection>https://github.com/Weasley-J/multiple-email-spring-boot</developerConnection>
     </scm>
