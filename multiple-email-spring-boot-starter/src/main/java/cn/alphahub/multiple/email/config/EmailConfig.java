@@ -28,6 +28,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static cn.alphahub.multiple.email.config.EmailConfig.EmailProperties;
+import static cn.alphahub.multiple.email.config.EmailConfig.EmailTemplateProperties;
+import static cn.alphahub.multiple.email.config.EmailConfig.EmailThreadPoolProperties;
+
 /**
  * 邮件配置类
  *
@@ -39,8 +43,7 @@ import java.util.stream.Collectors;
 @RefreshScope
 @Configuration(proxyBeanMethods = false)
 @ConfigurationPropertiesScan({"cn.alphahub.multiple.email.config"})
-@EnableConfigurationProperties({MailProperties.class, EmailConfig.EmailProperties.class,
-        EmailConfig.EmailTemplateProperties.class, EmailConfig.EmailThreadPoolProperties.class})
+@EnableConfigurationProperties({MailProperties.class, EmailProperties.class, EmailTemplateProperties.class, EmailThreadPoolProperties.class})
 public class EmailConfig {
 
     /**
