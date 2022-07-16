@@ -4,6 +4,7 @@ package cn.alphahub.multiple.email.demo.controller;
 import cn.alphahub.multiple.email.EmailTemplate;
 import cn.alphahub.multiple.email.annotation.Email;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,5 +67,22 @@ public class EmailController {
         } catch (MessagingException e) {
             log.error("domain:{},{}", message, e.getLocalizedMessage(), e);
         }
+    }
+
+    /**
+     * 发送给定的简单邮件消息
+     *
+     * @apiNote 次方便没有标注注解@Email，则会采用默认方法邮件模板[spring.mail.xxx]发送邮件
+     */
+    @PostMapping("/simple/send/nested")
+    public void sendSimpleEmailNested() {
+        SimpleMailMessageDomain domain = new SimpleMailMessageDomain();
+        domain.setSubject("232323");
+        domain.setTo("abc@qq.com");
+        domain.setText("cbd");
+        log.info("send simple email:{}", domain);
+        emailTemplate.send(domain);
+        EmailController controller = (EmailController) AopContext.currentProxy();
+        controller.sendMimeEmail(null,null);
     }
 }
