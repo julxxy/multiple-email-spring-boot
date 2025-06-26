@@ -1,0 +1,62 @@
+spring:
+  mail:
+    mail-properties:
+      host: "smtp.qq.com"
+      port: 465
+      username: "1432689025@qq.com"
+      password: "dmwxgvumdtnbfhba"
+      protocol: "smtp"
+      properties:
+        mail:
+          smtp:
+            ssl:
+              enable: true
+          debug: false
+    #邮件线程池配置
+    thread:
+      core-pool-size: 50
+      maximum-pool-size: 200
+      keep-alive-time: 10
+      time-unit: seconds
+      capacity: 2000
+    # 多邮件模板配置列表
+    email-templates:
+      - template-name: EmailQQ
+        mail-properties:
+          host: "smtp.qq.com"
+          port: 465
+          username: "1432689025@qq.com"
+          password: "dmwxgvumdtnbfhba"
+          protocol: "smtp"
+          properties:
+            mail:
+              smtp:
+                ssl:
+                  enable: true
+              debug: false
+      - template-name: EmailOffice365
+        mail-properties:
+          host: "smtp.office365.com"
+          port: 587
+          username: "liuwenjing201314@outlook.com"
+          password: "jing9591273465"
+          protocol: "smtp"
+          properties:
+            mail:
+              smtp:
+                starttls:
+                  enable: true
+              debug: false
+      - template-name: Email163
+        mail-properties:
+          host: "smtp.163.com"
+          port: 587
+          username: "lwj_weasley@163.com"
+          password: "EMRPZGEEOTKJJKBI"
+          protocol: "smtp"
+          properties:
+            mail:
+              smtp:
+                ssl:
+                  enable: true
+              debug: false
