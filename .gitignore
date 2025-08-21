@@ -69,3 +69,5 @@ build/
 !**/src/main/resources/*-lwj.yml
 !**/src/main/resources/*-*lwj.yml
 !**/src/main/resources/*-lwj*.yml
+
+git-reset.sh
